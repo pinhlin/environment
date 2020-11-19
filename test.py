@@ -1,18 +1,16 @@
 import pygame, sys, time
-
-class env(object):
+SCREEN_WIDTH = 640
+SCREEN_HEIGHT = 480
+class gripper(object):
     def __init__(self):
         self.gripper_mode = 'pick'
         self.gripper_size = 1
         self.gripper_height = 50
         self.gripper_init_width = 35
         self.gripper_width = 35
-        self.screen_width = 640
-        self.screen_height = 480
-        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         #initial position of the gripper, at the center of the screen
-        self.init_pos = [self.screen_width/2, self.screen_height/2]
-        self.gripperCenter = [self.screen_width/2, self.screen_height/2]
+        self.init_pos = [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]
+        self.gripperCenter = [SCREEN_WIDTH/2, SCREEN_HEIGHT/2]
         #gripper
         self.lg = pygame.Rect(self.gripperCenter[0]-self.gripper_width/2, self.gripperCenter[1], self.gripper_size, self.gripper_height)
         self.rg = pygame.Rect(self.gripperCenter[0]+self.gripper_width/2, self.gripperCenter[1], self.gripper_size, self.gripper_height)
@@ -20,30 +18,9 @@ class env(object):
         self.lg_speed_y = 0
         self.rg_speed_x = 0
         self.rg_speed_y = 0
-        #object
-        self.object_width = 26
-        self.object_height = 50
-        self.object_x = 100
-        self.object_y = 330
-        self.object_speed_x = 0
-        self.object_speed_y = 0
-        self.object = pygame.Rect(self.object_x, self.object_y, self.object_width, self.object_height)
-        #platform_org
-        self.platform_width = 50
-        self.platform_height = 50
-        self.platform_org_width = 50
-        self.platform_org_height = 50
-        self.platform_org = pygame.Rect(88, 380, self.platform_width, self.platform_height)
-        #platform
-        self.platform = pygame.Rect(self.screen_width / 2 - 25, 380, self.platform_width, self.platform_height)
-        #target platform **for testing, can be deleted for furture purpose
-        self.target_platform = self.platform
 
-        #setting background color
-        self.bg_color = pygame.Color('grey12')
-        self.light_grey = (200, 200, 200)
-        self.dark_grey = (120, 120, 120)
-        self.groundline = (255, 255, 255)
+    def getGripper(self): #get the information about gripper
+        return (self.lg, self.rg)
 
     def gripper_center(self):
         self.gripper_width += self.rg_speed_x -self.lg_speed_x
@@ -60,7 +37,6 @@ class env(object):
                 self.lg.y += self.lg_speed_y    
                 self.rg.y += self.rg_speed_y
                 
-
     def gripper_x_movement(self, target, target_width):
         target_posx = target.x + target_width / 2
         if target_posx > self.gripperCenter[0]:
@@ -87,10 +63,11 @@ class env(object):
             self.rg_speed_y = 0
         self.gripper_movement('y')
 
-    def pick_up(self, target, target_dim):
-        target_width, target_height = target_dim
+    def pick_up(self, target_class):
+        target_width, target_height = (target_class.object_width, target_class.object_height)
+        target = target_class.object
         self.gripper_x_movement(target, target_width)
-        if self.lg_speed_x == 0 and self.lg_speed_x == 0:
+        if self.lg_speed_x == 0 and self.rg_speed_x == 0:
             self.gripper_y_movement(target, target_height)
             if self.lg_speed_y == 0 and self.rg_speed_y == 0:
                 if self.lg.colliderect(target) and self.rg.colliderect(target):
@@ -107,9 +84,11 @@ class env(object):
                     else:
                         self.rg_speed_x = 0
                     self.gripper_movement('x')
+        self.gripper_center()
         return False       
 
-    def back(self, target = None):
+    def back(self, target_class = None):
+        target = target_class.object
         if self.lg.y > self.init_pos[1]:
             self.lg_speed_y = -1
             self.rg_speed_y = -1
@@ -131,8 +110,9 @@ class env(object):
             self.gripper_movement('x')
             self.gripper_center()
 
-    def put(self, target, beput, beput_dim):
-        beput_width, _ = beput_dim
+    def put(self, target_class, beput):
+        target = target_class.object
+        beput_width = beput.platform_width
         self.gripper_x_movement(beput, beput_width)
         if self.lg_speed_x == 0 and self.lg_speed_x == 0:
             if target.colliderect(beput) == True:
@@ -150,13 +130,14 @@ class env(object):
         target.y += self.lg_speed_y
         return False
 
+"""
     def objMovement(self):
         #updating the gripper center
         self.gripper_center()
         if self.gripper_mode == 'pick':
             if self.pick_up(self.object, (self.object_width, self.object_height)):
                 self.gripper_mode = 'back'
-
+        
         if self.gripper_mode == 'back':
             if self.back(self.object):
                 self.gripper_mode = 'put'
@@ -171,18 +152,7 @@ class env(object):
                     else:
                         self.target_platform = self.platform_org
                         
-    def objAnimation(self):
-        #define the movement of the object
-        self.objMovement()
-        #visuals
-        self.screen.fill(self.bg_color)
-        pygame.draw.rect(self.screen, self.light_grey, self.lg)
-        pygame.draw.rect(self.screen, self.light_grey, self.rg)
-        pygame.draw.rect(self.screen, self.dark_grey, self.object)
-        pygame.draw.rect(self.screen, 'red', self.platform_org)
-        pygame.draw.rect(self.screen, 'blue', self.platform)
-        pygame.draw.aaline(self.screen, self.groundline, (0, self.screen_height-50),(self.screen_width, self.screen_height-50))
-        #pygame.draw.aaline(self.screen, self.light_grey, (self.screen_width / 2, 0),(self.screen_width / 2, self.screen_height))
+"""
 
                 
 

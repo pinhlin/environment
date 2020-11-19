@@ -1,15 +1,15 @@
 import pygame, sys
-import test
+import world
 
 pygame.display.init()
 clock = pygame.time.Clock()
-Env = test.env()
+Env = world.env()
 while True:
     #handling input
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-    Env.objAnimation()
+    Env.animation()
     pygame.display.flip()
     clock.tick(60)
