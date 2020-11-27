@@ -45,7 +45,7 @@ class gui(object):
         if action == 'back':
             done = gripper.back(target)
         if action == 'put':
-           done = gripper.put(target, self.name2obj[beput_name])
+            done = gripper.put(target, self.name2obj[beput_name])
         return done
 
     def getGui(self): #get the information of the gui

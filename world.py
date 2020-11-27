@@ -1,15 +1,14 @@
 import gui
-import test
+import gripper
 import pygame, sys, time
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
 class env(object):
     def __init__(self):
-        self.gripper = test.gripper()
+        self.gripper = gripper.gripper()
         self.gui = gui.gui()
         #simple plan, can be modified for future purpose
-        self.plan = ['pick','object1','back','object1','put','object1','plt_target', 'back', 'none',\
-                        'pick','object2','back','object2','put', 'object2','object1','back', 'none'] 
+        self.plan = [] 
         self.cur_action = None
         self.target_name = None
         self.beput_name = None
@@ -22,6 +21,15 @@ class env(object):
         self.action_status = True #to check if the current action is done
         #loading background
         #self.background = pygame.image.load('maize_blue.jpg')
+
+    #actions for the gripper, input data 'target' is a string 
+    #action for picking up the target
+    def pick_up(self, target):
+        self.plan = ['pick', target, 'back', target]
+
+    #action for putting the object to a target platform
+    def put(self, target, beput):
+        self.plan = ['put', target, beput, 'back', 'none']
 
     def executePlan(self):
         #if the last action is completed, pop out the next action

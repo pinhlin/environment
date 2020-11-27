@@ -79,7 +79,7 @@ class gripper(object):
                     self.gripping = False
                     return True
         self.gripper_center()
-        return False       
+        return False
 
     def back(self, target_class = None):
         target = None
@@ -150,9 +150,3 @@ class gripper(object):
         target.y += self.lg_speed_y
         self.gripper_center()
         return False
-
-
-
-                
-
-
