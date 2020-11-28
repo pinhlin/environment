@@ -28,6 +28,13 @@ class Gui(object):
         self.gui_list.append((self.platform_target.color, self.platform_target.object))
         self.name2obj['plt_target'] = self.platform_target
 
+        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        # setting background color
+        self.bg_color = pygame.Color('grey12')
+        self.light_grey = (200, 200, 200)
+        self.dark_grey = (120, 120, 120)
+        self.groundline = (255, 255, 255)
+
     def executeAction(self, gripper, action = None, target_name = None, beput_name = None):
         if action == None and target_name == None:
             return False
@@ -51,4 +58,17 @@ class Gui(object):
     def getGui(self): #get the information of the gui
         return self.gui_list
 
+    def draw(self, gripper):
+        left_gripper, right_gripper = gripper.getGripper()
+        # visuals
+        self.screen.fill(self.bg_color)
+        # setting background
+        # self.screen.blit(self.background, (0, 0))
+        pygame.draw.rect(self.screen, self.light_grey, left_gripper)
+        pygame.draw.rect(self.screen, self.light_grey, right_gripper)
+        for information in self.gui_list:
+            color, obj = information
+            pygame.draw.rect(self.screen, color, obj)
+            
+        pygame.draw.aaline(self.screen, self.groundline, (0, SCREEN_HEIGHT-50),(SCREEN_WIDTH, SCREEN_HEIGHT-50))
         

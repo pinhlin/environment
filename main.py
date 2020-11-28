@@ -10,6 +10,6 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-    kitchen.animation()
+    kitchen.run()
     pygame.display.flip()
     clock.tick(60)
