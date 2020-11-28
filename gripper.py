@@ -2,7 +2,7 @@ import pygame, sys, time, math
 import numpy as np
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
-class gripper(object):
+class Gripper(object):
     def __init__(self):
         self.gripper_mode = 'pick'
         self.gripper_size = 6

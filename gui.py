@@ -1,9 +1,9 @@
 import pygame, sys, time
 import stuff
-import test
+from gripper import Gripper
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
-class gui(object):
+class Gui(object):
     def __init__(self): 
         self.gui_list = [] #to collect all the object in the gui
         self.name2obj = {} #a dict to help to convert object name to object
@@ -33,7 +33,7 @@ class gui(object):
             return False
         #setting the condition not having a target
         if target_name == 'none':
-            target = None    
+            target = None
         else:
             #convert string target name to object
             target = self.name2obj[target_name] 

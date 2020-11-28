@@ -1,15 +1,15 @@
 import pygame, sys
-import world
+from world import Kitchen
 
 pygame.display.init()
 clock = pygame.time.Clock()
-Env = world.env()
+kitchen = Kitchen()
 while True:
     #handling input
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-    Env.animation()
+    kitchen.animation()
     pygame.display.flip()
     clock.tick(60)
