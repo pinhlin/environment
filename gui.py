@@ -4,7 +4,7 @@ from gripper import Gripper
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
 class Gui(object):
-    def __init__(self): 
+    def __init__(self):
         self.gui_list = [] #to collect all the object in the gui
         self.name2obj = {} #a dict to help to convert object name to object
         #block1
@@ -34,6 +34,8 @@ class Gui(object):
         self.light_grey = (200, 200, 200)
         self.dark_grey = (120, 120, 120)
         self.groundline = (255, 255, 255)
+        # loading background
+        # self.background = pygame.image.load('maize_blue.jpg')
 
     def executeAction(self, gripper, action = None, target_name = None, beput_name = None):
         if action == None and target_name == None:

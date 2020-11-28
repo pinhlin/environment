@@ -1,7 +1,6 @@
 import pygame, sys, time
 from gripper import Gripper
 from gui import Gui
-
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
 class Kitchen(object):
@@ -10,15 +9,17 @@ class Kitchen(object):
     Serves as main API interface.
     """
     def __init__(self):
-        self.gripper = Gripper()
+        # PyGame Initialization
+        pygame.display.init()
+        self.clock = pygame.time.Clock()
+
         self.gui = Gui()
+        self.gripper = Gripper()
         self.plan = []
         self.cur_action = None
         self.target_name = None
         self.beput_name = None
-        self.action_status = True #to check if the current action is done
-        # loading background
-        # self.background = pygame.image.load('maize_blue.jpg')
+        self.action_status = True #to check if the current action is done        
 
     def pick_up(self, target):
         """
@@ -26,7 +27,7 @@ class Kitchen(object):
         Picks up `target`.
         Input: `target`, a string denoting target object
         """
-        self.plan = self.plan + ['pick', target, 'back', target]
+        self.plan += ['pick', target, 'back', target]
 
     def put(self, target, beput):
         """
@@ -35,7 +36,7 @@ class Kitchen(object):
         Input:  `target`, a string denoting target platform
                 `beput`, string denoting object to be put 
         """
-        self.plan = self.plan + ['put', target, beput, 'back', 'none']
+        self.plan += ['put', target, beput, 'back', 'none']
 
     def _execute_plan(self):
         """
@@ -51,8 +52,15 @@ class Kitchen(object):
 
     def run(self):
         """
-        Run the existing plan and display it.
+        Run the kitchen environment and display it.
         """
-        self._execute_plan()
-        self.gui.draw(self.gripper)
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+            self._execute_plan()
+            self.gui.draw(self.gripper)
+            pygame.display.flip()
+            self.clock.tick(60)
         
