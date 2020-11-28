@@ -25,11 +25,11 @@ class env(object):
     #actions for the gripper, input data 'target' is a string 
     #action for picking up the target
     def pick_up(self, target):
-        self.plan = ['pick', target, 'back', target]
+        self.plan = self.plan + ['pick', target, 'back', target]
 
     #action for putting the object to a target platform
     def put(self, target, beput):
-        self.plan = ['put', target, beput, 'back', 'none']
+        self.plan = self.plan + ['put', target, beput, 'back', 'none']
 
     def executePlan(self):
         #if the last action is completed, pop out the next action
