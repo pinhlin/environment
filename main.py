@@ -6,8 +6,11 @@ kitchen = Kitchen()
 # This was simple plan earlier
 # ['pick','object1','back','object1','put','object1','plt_target', 'back', 'none',\	        
 # 'pick','object2','back','object2','put', 'object2','object1','back', 'none']
-kitchen.fill_water('cup', 580)
-kitchen.put('cup', 100)
+kitchen.pick_up('coffee')
+kitchen.pour('cup', 'coffee')
+kitchen.put('coffee', 100)
+kitchen.fill_water('cup', 250)
+kitchen.put('cup', 180)
 kitchen.pick_up('spoon')
 kitchen.stir('spoon', 'cup')
 kitchen.put('spoon', 30)

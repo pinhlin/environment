@@ -15,18 +15,26 @@ class Kitchen(object):
         self.gui = Gui()
         self.gripper = Gripper()
         self.plan = []
+        self.cur_plan = []
         self.cur_action = None
         self.target_name = None
         self.beput_name = None
         self.action_status = True #to check if the current action is done  
         self.plan_status = True #to check if the plan is done  
-        #self.in_grip_obj = None #None if there is no object in the gripper      
+        #self.in_grip_obj = None #None if there is no object in the gripper 
+        #      
+    def pour(self, bepour, target):
+        self.cur_plan.append('pouring')
+        self.plan += ['pour', target, bepour]
+        self.plan_status = False
 
     def fill_water(self, target, faucet):
-        self.plan += ['pick', target, 'back', target, 'put', target, faucet, 'fill_water', 'none','back', target]
+        self.cur_plan.append('filling water')
+        self.plan += ['pick', target, 'back', target, 'put', target, faucet, 'fill_water', 'none', 'back', target]
         self.plan_status = False
 
     def stir(self, target, bestir):
+        self.cur_plan.append('stirring')
         self.plan += ['put', target, bestir, 'pick', target, 'stir', target, 'back', target]
         self.plan_status = False
 
@@ -36,6 +44,7 @@ class Kitchen(object):
         Picks up `target`.
         Input: `target`, a string denoting target object
         """
+        self.cur_plan.append('picking up target')
         self.plan += ['pick', target, 'back', target]
         self.plan_status = False
 
@@ -46,6 +55,7 @@ class Kitchen(object):
         Input:  `target`, a string denoting target platform
                 `beput`, string denoting object to be put 
         """
+        self.cur_plan.append('putting target')
         self.plan += ['put', target, beput, 'back', 'none']
         self.plan_status = False
 
@@ -57,7 +67,7 @@ class Kitchen(object):
         if self.action_status and len(self.plan):
             self.cur_action = self.plan.pop(0)
             self.target_name = self.plan.pop(0)
-            if self.cur_action == 'put':
+            if self.cur_action == 'put' or self.cur_action == 'pour':
                 self.beput_name = self.plan.pop(0)
         self.action_status = self.gui.executeAction(self.gripper, self.cur_action, self.target_name, self.beput_name)
         #if the last action of the plan is done
@@ -75,7 +85,7 @@ class Kitchen(object):
                     sys.exit()
             if self.plan_status == False:
                 self._execute_plan()
-            self.gui.draw(self.gripper)
+            self.gui.draw(self.gripper, self.cur_action)
             pygame.display.flip()
             self.clock.tick(60)
         

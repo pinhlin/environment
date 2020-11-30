@@ -58,9 +58,6 @@ class cup(object):
         pos['y'] = np.random.normal(self.object.y, self.sigma, 1000)
         return pos
 
-
-
-"""
 class block(object):
     def __init__(self, color, width, height, init_x, init_y, std = 2):
         #object
@@ -72,6 +69,7 @@ class block(object):
         self.object_speed_x = 0 #initialize the speed be 0
         self.object_speed_y = 0 #initailize the speed be 0
         self.object = pygame.Rect(self.object_x, self.object_y, self.object_width, self.object_height)
+        self.hold = self.object
         self.sigma = std #std of the normal distribution, for uncertainty
 
     def update(self):
@@ -84,6 +82,7 @@ class block(object):
         pos['y'] = np.random.normal(self.object.y, self.sigma, 1000)
         return pos
 
+"""
 #Platform class is particular for this test, can be deleted for future purpose
 class platform(object):
     def __init__(self, color, width, height, init_x, init_y):

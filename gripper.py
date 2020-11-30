@@ -131,7 +131,7 @@ class Gripper(object):
         if desired_width == None:
             desired_width = self.gripper_init_width
 
-        if self.gripper_width < desired_width:
+        if self.gripper_width <= desired_width:
             self.lg_speed_x -= 1
             self.rg_speed_x += 1
             self.gripper_movement('x')
@@ -187,9 +187,25 @@ class Gripper(object):
         target_class.update()
         self.stir_count -= 1
         if self.stir_count == 0:
-            self.stir_count = 4
+            self.stir_count = 100
             self.lg_speed_x = 0
             self.rg_speed_x = 0 
             target_class.object_speed_x = 0
             return True
+        return False
+
+    def move_x(self, target_class, beput_class, table = None):
+        if type(beput_class) is int:
+            beput = table
+            self.gripper_x_movement(None, beput_class)
+        else:
+            beput_width = beput_class.object_width
+            beput = beput_class.bottom
+            self.gripper_x_movement(beput, beput_width)
+        if self.lg_speed_x == 0 and self.lg_speed_x == 0:
+            return True
+        target_class.object_speed_x = self.lg_speed_x
+        target_class.object_speed_y = self.lg_speed_y
+        target_class.update()
+        self.gripper_center()
         return False
