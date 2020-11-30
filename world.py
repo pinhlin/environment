@@ -12,14 +12,23 @@ class Kitchen(object):
         # PyGame Initialization
         pygame.display.init()
         self.clock = pygame.time.Clock()
-
         self.gui = Gui()
         self.gripper = Gripper()
         self.plan = []
         self.cur_action = None
         self.target_name = None
         self.beput_name = None
-        self.action_status = True #to check if the current action is done        
+        self.action_status = True #to check if the current action is done  
+        self.plan_status = True #to check if the plan is done  
+        #self.in_grip_obj = None #None if there is no object in the gripper      
+
+    def fill_water(self, target, faucet):
+        self.plan += ['pick', target, 'back', target, 'put', target, faucet, 'fill_water', 'none','back', target]
+        self.plan_status = False
+
+    def stir(self, target, bestir):
+        self.plan += ['put', target, bestir, 'pick', target, 'stir', target, 'back', target]
+        self.plan_status = False
 
     def pick_up(self, target):
         """
@@ -28,6 +37,7 @@ class Kitchen(object):
         Input: `target`, a string denoting target object
         """
         self.plan += ['pick', target, 'back', target]
+        self.plan_status = False
 
     def put(self, target, beput):
         """
@@ -37,6 +47,7 @@ class Kitchen(object):
                 `beput`, string denoting object to be put 
         """
         self.plan += ['put', target, beput, 'back', 'none']
+        self.plan_status = False
 
     def _execute_plan(self):
         """
@@ -49,6 +60,9 @@ class Kitchen(object):
             if self.cur_action == 'put':
                 self.beput_name = self.plan.pop(0)
         self.action_status = self.gui.executeAction(self.gripper, self.cur_action, self.target_name, self.beput_name)
+        #if the last action of the plan is done
+        if self.action_status and len(self.plan) == 0:
+            self.plan_status = True
 
     def run(self):
         """
@@ -59,7 +73,8 @@ class Kitchen(object):
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-            self._execute_plan()
+            if self.plan_status == False:
+                self._execute_plan()
             self.gui.draw(self.gripper)
             pygame.display.flip()
             self.clock.tick(60)

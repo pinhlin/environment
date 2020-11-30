@@ -8,7 +8,7 @@ class Gripper(object):
         self.gripper_size = 6
         self.gripper_height = 50
         self.gripper_init_width = 35
-        self.gripper_width = 35
+        self.gripper_width = 50
         self.gripping = False # bool to check if the gripper is gripping, if True, the 
                               # gripper stop to calculate its center (for pick up)
         #initial position of the gripper, at the center of the screen
@@ -21,6 +21,9 @@ class Gripper(object):
         self.lg_speed_y = 0
         self.rg_speed_x = 0
         self.rg_speed_y = 0
+        #stir constant
+        self.stir_count = 100
+        self.stir_speed = 1
 
     def getGripper(self): #get the information about gripper
         return (self.lg, self.rg)
@@ -41,7 +44,10 @@ class Gripper(object):
                 self.rg.y += self.rg_speed_y
                 
     def gripper_x_movement(self, target, target_width):
-        target_posx = target.x + target_width / 2
+        if target == None:
+            target_posx = target_width
+        else:
+            target_posx = target.x + target_width / 2
         if math.fabs(target_posx - self.gripperCenter[0]) > 0.5:
             if target_posx > self.gripperCenter[0]:
                 self.lg_speed_x = 1
@@ -69,15 +75,19 @@ class Gripper(object):
 
     def pick_up(self, target_class):
         target_width, target_height = (target_class.object_width, target_class.object_height)
-        target = target_class.object
-        self.gripper_x_movement(target, target_width)
-        if self.lg_speed_x == 0 and self.rg_speed_x == 0 or self.gripping:
-            self.gripper_y_movement(target, target_height)
-            if self.lg_speed_y == 0 and self.rg_speed_y == 0 or self.gripping:
-                self.gripping = True
-                if self.grip(target):
-                    self.gripping = False
-                    return True
+        if target_width >= self.gripper_width and self.gripping == False:
+            self.loose_gripper(target_width)
+        else:
+            target = target_class.hold
+            if self.gripping == False:
+                self.gripper_x_movement(target, target_width)
+            if self.lg_speed_x == 0 and self.rg_speed_x == 0 or self.gripping:
+                self.gripper_y_movement(target, target_height)
+                if self.lg_speed_y == 0 and self.rg_speed_y == 0 or self.gripping:
+                    self.gripping = True
+                    if self.grip(target):
+                        self.gripping = False
+                        return True
         self.gripper_center()
         return False
 
@@ -89,13 +99,16 @@ class Gripper(object):
             self.lg_speed_y = -1
             self.rg_speed_y = -1
             if target != None:
-                target.y += self.lg_speed_y
+                target_class.object_speed_y = self.lg_speed_y
+                target_class.update()
             self.gripper_movement('y')
         else:
             self.lg_speed_x = 0
             self.rg_speed_x = 0
             self.lg_speed_y = 0
             self.rg_speed_y = 0
+            if target_class != None:
+                target_class.object_speed_y = 0
             return True
         self.gripper_center()
         return False
@@ -106,7 +119,7 @@ class Gripper(object):
         if self.lg.colliderect(target):
             self.lg_speed_x = 0
         if self.rg.colliderect(target):
-            self.rg_speed_x = 0
+            self.rg_speed_x = 0    
         self.gripper_movement('x')
         self.lg_speed_x = 0
         self.rg_speed_x = 0
@@ -114,8 +127,11 @@ class Gripper(object):
             return True
         return False
 
-    def loose_gripper(self):
-        if self.gripper_width < self.gripper_init_width:
+    def loose_gripper(self, desired_width = None):
+        if desired_width == None:
+            desired_width = self.gripper_init_width
+
+        if self.gripper_width < desired_width:
             self.lg_speed_x -= 1
             self.rg_speed_x += 1
             self.gripper_movement('x')
@@ -128,11 +144,15 @@ class Gripper(object):
             return True
         
 
-    def put(self, target_class, beput_class):
+    def put(self, target_class, beput_class, table = None):
         target = target_class.object
-        beput_width = beput_class.object_width
-        beput = beput_class.object
-        self.gripper_x_movement(beput, beput_width)
+        if type(beput_class) is int:
+            beput = table
+            self.gripper_x_movement(None, beput_class)
+        else:
+            beput_width = beput_class.object_width
+            beput = beput_class.bottom
+            self.gripper_x_movement(beput, beput_width)
         if self.lg_speed_x == 0 and self.lg_speed_x == 0 or self.gripping:
             if target.colliderect(beput) == True:
                 self.gripping = True
@@ -140,13 +160,36 @@ class Gripper(object):
                 self.rg_speed_y = 0
                 if self.loose_gripper():
                     self.gripping = False
+                    target_class.object_speed_x = 0
+                    target_class.object_speed_y = 0
                     return True
                 return False
             else:
                 self.lg_speed_y = 1
                 self.rg_speed_y = 1
                 self.gripper_movement('y')
-        target.x += self.lg_speed_x
-        target.y += self.lg_speed_y
+        target_class.object_speed_x = self.lg_speed_x
+        target_class.object_speed_y = self.lg_speed_y
+        target_class.update()
         self.gripper_center()
+        return False
+
+    def stir(self, target_class):
+        if self.stir_count % 10 == 0:
+            self.stir_speed = -1*self.stir_speed
+        self.lg_speed_x = self.stir_speed
+        self.rg_speed_x = self.stir_speed
+        self.gripper_movement('x')
+        self.lg_speed_x = 0
+        self.rg_speed_x = 0 
+        self.gripper_center()
+        target_class.object_speed_x = self.stir_speed
+        target_class.update()
+        self.stir_count -= 1
+        if self.stir_count == 0:
+            self.stir_count = 4
+            self.lg_speed_x = 0
+            self.rg_speed_x = 0 
+            target_class.object_speed_x = 0
+            return True
         return False
