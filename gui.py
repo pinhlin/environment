@@ -12,34 +12,53 @@ class Gui(object):
         #self.rotate = False
         #self.rotate_count = 200
         # setting background color
-        self.bg_color = pygame.Color('grey12')
+        self.bg_color = pygame.Color('white') #pygame.Color('grey12')
         self.light_grey = (200, 200, 200)
         self.dark_grey = (120, 120, 120)
-        self.groundline = (255, 255, 255)
+        self.groundline = (0,0,0)
+        self.maize = pygame.Color(255, 203, 5)
+        self.blue = pygame.Color(0, 39, 76)
         # loading background
         # self.background = pygame.image.load('maize_blue.jpg')
         self.gui_list = [] #to collect all the object in the gui
         self.name2obj = {} #a dict to help to convert object name to object
-        #table
+
+        # table
         self.table = pygame.Rect(0, SCREEN_HEIGHT-50, SCREEN_WIDTH, 50)
         self.gui_list.append((self.bg_color, self.table))
-        #spoon
+
+        # spoon
         height = 100
-        self.spoon = stuff.spoon('white', 5, height, 50, SCREEN_HEIGHT-50-height-10)
+        self.spoon = stuff.spoon(self.blue, 5, height, 50, SCREEN_HEIGHT-50-height-10)
         self.gui_list.append((self.spoon.color, self.spoon.shaft))
         self.gui_list.append((self.spoon.color, self.spoon.head))
         self.name2obj['spoon'] = self.spoon
-        #cup
-        self.cup = stuff.cup('white', 40, 60, 200)
+
+        # cup
+        self.cup = stuff.cup(self.blue, 40, 60, 200)
         self.contain_color = self.bg_color
         self.gui_list.append(('dummy_color', self.cup.object))
         self.gui_list.append((self.cup.color, self.cup.left))
         self.gui_list.append((self.cup.color, self.cup.right))
         self.gui_list.append((self.cup.color, self.cup.bottom))
         self.name2obj['cup'] = self.cup
+
+        # faucet
+        faucet_ul_x, faucet_ur_x = SCREEN_WIDTH-150, SCREEN_WIDTH-50
+        faucet_bl_x, faucet_br_x = SCREEN_WIDTH-150, SCREEN_WIDTH-50
+        faucet_ul_y, faucet_ur_y =  SCREEN_HEIGHT-50-300, SCREEN_HEIGHT-50-300
+        faucet_bl_y, faucet_br_y = SCREEN_HEIGHT-50, SCREEN_HEIGHT-50
+        faucet_coordinates = [(faucet_ul_x,faucet_ul_y), (faucet_ur_x, faucet_ur_y),
+                                (faucet_br_x, faucet_br_y), (faucet_br_x-30,faucet_br_y),
+                                (faucet_br_x-30, faucet_ur_y+30), (faucet_ul_x+30,faucet_ul_y+30),
+                                (faucet_ul_x+30,faucet_ul_y+40), (faucet_ul_x+30,faucet_ul_y)]
+        self.faucet = stuff.faucet('grey12', 100, 300, faucet_ul_x, faucet_ul_y, faucet_coordinates)
+        self.gui_list.append((self.faucet.color, self.faucet.object))
+        self.name2obj['faucet'] = self.faucet
+
         #block1
-        self.block = stuff.block('brown', 50, 80, 100, SCREEN_HEIGHT-50-80)
-        self.gui_list.append(('brown', self.block.object))
+        self.block = stuff.block(self.maize, 50, 80, 100, SCREEN_HEIGHT-50-80)
+        self.gui_list.append((self.maize, self.block.object))
         self.name2obj['coffee'] = self.block
 
     def executeAction(self, gripper, action = None, target_name = None, beput_name = None):
@@ -55,7 +74,7 @@ class Gui(object):
         #action type is a string
         done = False
         if action == 'fill_water':
-            self.contain_color = (0, 0, 255)
+            self.contain_color = pygame.Color(186, 229, 225, 10)
             done = True
         if action == 'stir':
             r, g, b = self.contain_color
@@ -93,12 +112,15 @@ class Gui(object):
         rg.fill(self.light_grey)
         self.screen.blit(lg, [left_gripper.x, left_gripper.y])
         self.screen.blit(rg, [right_gripper.x, right_gripper.y])
+
+        # TODO: Fix this - I don't think this works?
         pygame.draw.aaline(self.screen, self.groundline, (0, SCREEN_HEIGHT-50),(SCREEN_WIDTH, SCREEN_HEIGHT-50))
-        #print curretn action
+
         font = pygame.freetype.Font('fonts/OpenSans-Light.ttf', 24) 
-        text, text_rect = font.render('current action: ' + action, fgcolor=(255, 255, 255))
+        text, text_rect = font.render('current action: ' + action, fgcolor=self.blue)
         text_rect.center = (SCREEN_WIDTH // 2, 20)
         self.screen.blit(text, text_rect)
+
         for information in self.gui_list:
             color, obj = information
             if color == 'dummy_color':

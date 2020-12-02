@@ -58,6 +58,15 @@ class cup(object):
         pos['y'] = np.random.normal(self.object.y, self.sigma, 1000)
         return pos
 
+class faucet(object):
+    def __init__(self, color, width, height, init_x, init_y, coordinates):
+        self.color = color
+        self.object_x = init_x
+        self.object_y = init_y
+        self.base = pygame.Rect(self.object_x, self.object_y, width, height)
+        self.surface = pygame.Surface((self.base.w, self.base.h))
+        self.object = pygame.draw.polygon(self.surface, self.color, coordinates)
+
 class block(object):
     def __init__(self, color, width, height, init_x, init_y, std = 2):
         #object
