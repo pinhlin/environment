@@ -1,4 +1,5 @@
 import pygame, sys, time
+import pygame.freetype
 import stuff
 from gripper import Gripper
 SCREEN_WIDTH = 640
@@ -6,7 +7,7 @@ SCREEN_HEIGHT = 480
 class Gui(object):
     def __init__(self):
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-        pygame.font.init()
+        pygame.freetype.init()
         #to check if current action is pouring
         #self.rotate = False
         #self.rotate_count = 200
@@ -94,11 +95,10 @@ class Gui(object):
         self.screen.blit(rg, [right_gripper.x, right_gripper.y])
         pygame.draw.aaline(self.screen, self.groundline, (0, SCREEN_HEIGHT-50),(SCREEN_WIDTH, SCREEN_HEIGHT-50))
         #print curretn action
-        font = pygame.font.SysFont('freesansbold.ttf', 32) 
-        text = font.render('current action is: ' + action, True, (0, 255, 0), (0, 0, 255)) 
-        textRect = text.get_rect()  
-        textRect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2) 
-        self.screen.blit(text, textRect)
+        font = pygame.freetype.Font('fonts/OpenSans-Light.ttf', 24) 
+        text, text_rect = font.render('current action: ' + action, fgcolor=(255, 255, 255))
+        text_rect.center = (SCREEN_WIDTH // 2, 20)
+        self.screen.blit(text, text_rect)
         for information in self.gui_list:
             color, obj = information
             if color == 'dummy_color':

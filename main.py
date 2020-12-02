@@ -15,13 +15,6 @@ kitchen.pick_up('spoon')
 kitchen.stir('spoon', 'cup')
 kitchen.put('spoon', 30)
 
-#kitchen.pick_up('object1')
-#kitchen.put('object1', 'plt_target')
-#kitchen.pick_up('object2')
-#kitchen.put('object2', 'object1')
-#kitchen.pick_up('object2')
-#kitchen.put('object2', 70)
-#kitchen.put('object1', 'object2')
 kitchen.run()
 
 # pygame.display.init()
