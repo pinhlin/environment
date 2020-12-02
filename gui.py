@@ -77,11 +77,11 @@ class Gui(object):
             self.contain_color = pygame.Color(186, 229, 225, 10)
             done = True
         if action == 'stir':
-            r, g, b = self.contain_color
+            r, g, b, a = self.contain_color
             r = min(165, r+3)
             g = min(42, g+1)
             b = max(42, b-5)
-            self.contain_color = (r, g, b)
+            self.contain_color = pygame.Color(r, g, b, a)
             done = gripper.stir(target)
         if action == 'pick':
             done = gripper.pick_up(target)
