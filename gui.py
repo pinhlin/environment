@@ -18,6 +18,7 @@ class Gui(object):
         self.groundline = (0,0,0)
         self.maize = pygame.Color(255, 203, 5)
         self.blue = pygame.Color(0, 39, 76)
+        self.table_color = pygame.Color(202, 164, 114)
         # loading background
         # self.background = pygame.image.load('maize_blue.jpg')
         self.gui_list = [] #to collect all the object in the gui
@@ -25,7 +26,7 @@ class Gui(object):
 
         # table
         self.table = pygame.Rect(0, SCREEN_HEIGHT-50, SCREEN_WIDTH, 50)
-        self.gui_list.append((self.bg_color, self.table))
+        self.gui_list.append((self.table_color, self.table))
 
         # spoon
         height = 100
@@ -48,13 +49,13 @@ class Gui(object):
         faucet_bl_x, faucet_br_x = SCREEN_WIDTH-150, SCREEN_WIDTH-50
         faucet_ul_y, faucet_ur_y =  SCREEN_HEIGHT-50-300, SCREEN_HEIGHT-50-300
         faucet_bl_y, faucet_br_y = SCREEN_HEIGHT-50, SCREEN_HEIGHT-50
-        faucet_coordinates = [(faucet_ul_x,faucet_ul_y), (faucet_ur_x, faucet_ur_y),
+        self.faucet_coordinates = [(faucet_ul_x,faucet_ul_y), (faucet_ur_x, faucet_ur_y),
                                 (faucet_br_x, faucet_br_y), (faucet_br_x-30,faucet_br_y),
                                 (faucet_br_x-30, faucet_ur_y+30), (faucet_ul_x+30,faucet_ul_y+30),
                                 (faucet_ul_x+30,faucet_ul_y+40), (faucet_ul_x+30,faucet_ul_y)]
-        self.faucet = stuff.faucet('grey12', 100, 300, faucet_ul_x, faucet_ul_y, faucet_coordinates)
-        self.gui_list.append((self.faucet.color, self.faucet.object))
-        self.name2obj['faucet'] = self.faucet
+        #self.faucet = stuff.faucet('grey12', 100, 300, faucet_ul_x, faucet_ul_y, faucet_coordinates)
+        #self.gui_list.append((self.faucet.color, self.faucet.object))
+        #self.name2obj['faucet'] = self.faucet
 
         #block1
         self.block = stuff.block(self.maize, 50, 80, 100, SCREEN_HEIGHT-50-80)
@@ -80,7 +81,7 @@ class Gui(object):
             r, g, b, a = self.contain_color
             r = min(165, r+3)
             g = min(42, g+1)
-            b = max(42, b-5)
+            b = max(42, b-2)
             self.contain_color = pygame.Color(r, g, b, a)
             done = gripper.stir(target)
         if action == 'pick':
@@ -112,7 +113,8 @@ class Gui(object):
         rg.fill(self.light_grey)
         self.screen.blit(lg, [left_gripper.x, left_gripper.y])
         self.screen.blit(rg, [right_gripper.x, right_gripper.y])
-
+        #draw the faucet
+        pygame.draw.polygon(self.screen, 'grey', self.faucet_coordinates)
         # TODO: Fix this - I don't think this works?
         pygame.draw.aaline(self.screen, self.groundline, (0, SCREEN_HEIGHT-50),(SCREEN_WIDTH, SCREEN_HEIGHT-50))
 
