@@ -30,7 +30,7 @@ class Kitchen(object):
 
     def fill_water(self, target, faucet):
         self.cur_plan.append('filling water')
-        self.plan += ['pick', target, 'back', target, 'put', target, faucet, 'fill_water', 'none', 'back', target]
+        self.plan += ['pick', target, 'back', target, 'put', target, faucet, 'fill_water', 'none']
         self.plan_status = False
 
     def stir(self, target, bestir):

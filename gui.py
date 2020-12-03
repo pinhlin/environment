@@ -18,7 +18,7 @@ class Gui(object):
         self.groundline = (0,0,0)
         self.maize = pygame.Color(255, 203, 5)
         self.blue = pygame.Color(0, 39, 76)
-        self.table_color = pygame.Color(202, 164, 114)
+        self.table_color = self.blue#pygame.Color(202, 164, 114)
         # loading background
         # self.background = pygame.image.load('maize_blue.jpg')
         self.gui_list = [] #to collect all the object in the gui
@@ -42,32 +42,34 @@ class Gui(object):
         cup_width = 40
         self.cup = stuff.cup(self.blue, cup_width, cup_height, self.drawer_pos_cup+self.drawer_width/2-cup_width/2, self.drawer_bottom)
         self.contain_color = self.bg_color
+        self.coffee_color = self.bg_color
 
-        #coffe
+        # coffee
         bag_height = 80
         bag_width = 50
-        self.coffee_bag = stuff.block(self.maize, bag_width, bag_height, self.drawer_pos_coffee+self.drawer_width/2-bag_width/2, \
+        self.coffee_bag = stuff.block(self.blue, bag_width, bag_height, self.drawer_pos_coffee+self.drawer_width/2-bag_width/2, \
                                     self.drawer_bottom-bag_height, addText=True)
         self.coffee_bag.addText2Block('Coffee')
-        #drawer1
-        self.drawer1 = stuff.drawer('brown', self.drawer_width, self.drawer_height, self.drawer_pos_coffee, self.drawer_front, self.coffee_bag)
-        self.gui_list.append(('brown', self.drawer1.object, self.drawer1))
+        # drawer1
+        self.drawer1 = stuff.drawer(self.maize, self.drawer_width, self.drawer_height, self.drawer_pos_coffee, self.drawer_front, self.coffee_bag)
+        self.gui_list.append((self.maize, self.drawer1.object, self.drawer1))
         self.name2obj['drawer1'] = self.drawer1
-        #drawer2
-        self.drawer2 = stuff.drawer('brown', self.drawer_width, self.drawer_height, self.drawer_pos_cup, self.drawer_front, self.cup)
-        self.gui_list.append(('brown', self.drawer2.object, self.drawer2))
+        # drawer2
+        self.drawer2 = stuff.drawer(self.maize, self.drawer_width, self.drawer_height, self.drawer_pos_cup, self.drawer_front, self.cup)
+        self.gui_list.append((self.maize, self.drawer2.object, self.drawer2))
         self.name2obj['drawer2'] = self.drawer2
-        #drawer3
-        self.drawer3 = stuff.drawer('brown', self.drawer_width, self.drawer_height, self.drawer_pos_spoon, self.drawer_front, self.spoon)
-        self.gui_list.append(('brown', self.drawer3.object, self.drawer3))
+        # drawer3
+        self.drawer3 = stuff.drawer(self.maize, self.drawer_width, self.drawer_height, self.drawer_pos_spoon, self.drawer_front, self.spoon)
+        self.gui_list.append((self.maize, self.drawer3.object, self.drawer3))
         self.name2obj['drawer3'] = self.drawer3
 
         #appending object in the list after drawer
         #appending coffee
-        self.gui_list.append((self.maize, self.coffee_bag.object, self.coffee_bag))
+        self.gui_list.append((self.blue, self.coffee_bag.object, self.coffee_bag))
         self.name2obj['coffee'] = self.coffee_bag 
         #appending cup
         self.gui_list.append(('dummy_color', self.cup.object, self.cup))
+        self.gui_list.append(('dummy_coffee', self.cup.coffee, self.cup))
         self.gui_list.append((self.cup.color, self.cup.left, self.cup))
         self.gui_list.append((self.cup.color, self.cup.right, self.cup))
         self.gui_list.append((self.cup.color, self.cup.bottom, self.cup))
@@ -83,12 +85,17 @@ class Gui(object):
         #faucet
         faucet_ul_x, faucet_ur_x = SCREEN_WIDTH-150, SCREEN_WIDTH-50
         faucet_bl_x, faucet_br_x = SCREEN_WIDTH-150, SCREEN_WIDTH-50
-        faucet_ul_y, faucet_ur_y =  SCREEN_HEIGHT-50-300, SCREEN_HEIGHT-50-300
+        faucet_ul_y, faucet_ur_y =  SCREEN_HEIGHT-50-200, SCREEN_HEIGHT-50-200
         faucet_bl_y, faucet_br_y = SCREEN_HEIGHT-50, SCREEN_HEIGHT-50
         self.faucet_coordinates = [(faucet_ul_x,faucet_ul_y), (faucet_ur_x, faucet_ur_y),
                                 (faucet_br_x, faucet_br_y), (faucet_br_x-30,faucet_br_y),
                                 (faucet_br_x-30, faucet_ur_y+30), (faucet_ul_x+30,faucet_ul_y+30),
-                                (faucet_ul_x+30,faucet_ul_y+40), (faucet_ul_x+30,faucet_ul_y)]
+                                (faucet_ul_x+30,faucet_ul_y+40), (faucet_ul_x,faucet_ul_y+40)]
+        self.color_table = {
+            'dummy_color' : self.contain_color,
+            'dummy_coffee' : self.coffee_color
+        }
+
 
     def executeAction(self, gripper, action = None, target_name = None, beput_name = None):
         if action == None and target_name == None:
@@ -104,6 +111,7 @@ class Gui(object):
         done = False
         if action == 'fill_water':
             self.contain_color = pygame.Color(186, 229, 225, 10)
+            self.color_table['dummy_color'] = self.contain_color
             done = True
         if action == 'stir':
             r, g, b, a = self.contain_color
@@ -111,6 +119,8 @@ class Gui(object):
             g = min(42, g+1)
             b = max(42, b-2)
             self.contain_color = pygame.Color(r, g, b, a)
+            self.color_table['dummy_color'] = self.contain_color
+            self.color_table['dummy_coffee'] = self.contain_color
             done = gripper.stir(target)
         if action == 'pick':
             done = gripper.pick_up(target)
@@ -118,11 +128,17 @@ class Gui(object):
             done = gripper.back(target)
         if action == 'put':
             if type(beput_name) is str:
-                done = gripper.put(target, self.name2obj[beput_name])
+                if beput_name == 'faucet':
+                    done = gripper.put(target, SCREEN_WIDTH-130, self.table)
+                else:
+                    done = gripper.put(target, self.name2obj[beput_name])
             else:
                 done = gripper.put(target, beput_name, self.table)
         if action == 'pour':
             done =  gripper.pour(target, self.name2obj[beput_name])
+            if done:
+                self.coffee_color = pygame.Color(202, 164, 114)
+                self.color_table['dummy_coffee'] = self.coffee_color
         if action == 'open':
             done = gripper.open_drawer(target, self.table)
             if done:
@@ -151,8 +167,8 @@ class Gui(object):
 
         for information in self.gui_list:
             color, obj, obj_class = information
-            if color == 'dummy_color':
-                color = self.contain_color
+            if type(color) == str and color in self.color_table.keys():
+                color = self.color_table[color]
             surf = pygame.Surface((obj.w, obj.h))
             surf.fill(color)
             self.screen.blit(surf, [obj.x, obj.y])
@@ -198,3 +214,5 @@ class Gui(object):
             self.rotate = False
         else:
         """
+
+        #image = pygame.Surface([640,480], pygame.SRCALPHA, 32) image = image.convert_alpha() 

@@ -5,7 +5,7 @@ pygame.freetype.init()
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
 TABLE_HEIGHT = SCREEN_HEIGHT-50
-FONT = pygame.freetype.Font('fonts/OpenSans-Light.ttf', 12) 
+FONT = pygame.freetype.Font('fonts/OpenSans-Light.ttf', 12)
 class spoon(object):
     def __init__(self, color, width, height, init_x, init_y, addText = False, std = 2):
         self.addText = addText
@@ -47,6 +47,7 @@ class cup(object):
         self.left = pygame.Rect(self.object_x, self.object_y, rim_width, self.object_height)
         self.right = pygame.Rect(self.object_x+rim_width+width, self.object_y, rim_width, self.object_height)
         self.bottom = pygame.Rect(self.object_x+rim_width, bottom-rim_width, width, rim_width)
+        self.coffee = pygame.Rect(self.object_x+rim_width, self.object_y+(height/2), width, height/2)
         self.object = self.bottom.unionall([self.left, self.right])
         self.hold = self.object
         self.sigma = std #std of the normal distribution, for uncertainty
@@ -60,6 +61,8 @@ class cup(object):
         self.right.y += self.object_speed_y
         self.bottom.x += self.object_speed_x
         self.bottom.y += self.object_speed_y
+        self.coffee.x += self.object_speed_x
+        self.coffee.y += self.object_speed_y
         self.object_speed_x = 0
         self.object_speed_y = 0
 
@@ -145,7 +148,7 @@ class block(object):
     def addText2Block(self, text):
         if self.text_string == None: 
             self.text_string = text
-        self.text = FONT.render(self.text_string, 'Red'), (self.object.x, self.object.y+self.object_height/2)
+        self.text = FONT.render(self.text_string, pygame.Color(255, 203, 5)), (self.object.x, self.object.y+self.object_height/2)
         return self.text
 
 """
