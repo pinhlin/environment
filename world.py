@@ -16,7 +16,7 @@ class Kitchen(object):
         self.gripper = Gripper()
         self.plan = []
         self.cur_plan = []
-        self.cur_action = None
+        self.cur_action = ''
         self.target_name = None
         self.beput_name = None
         self.action_status = True #to check if the current action is done  
@@ -57,6 +57,11 @@ class Kitchen(object):
         """
         self.cur_plan.append('putting target')
         self.plan += ['put', target, beput, 'back', 'none']
+        self.plan_status = False
+
+    def open(self, target):
+        self.cur_plan.append('opening drawer')
+        self.plan += ['pick', target, 'open', target]
         self.plan_status = False
 
     def _execute_plan(self):

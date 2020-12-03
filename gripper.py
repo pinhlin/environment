@@ -24,6 +24,9 @@ class Gripper(object):
         #stir constant
         self.stir_count = 100
         self.stir_speed = 1
+        #pour constant
+        self.pour_count = 200
+        self.pour_speed = 10
 
     def getGripper(self): #get the information about gripper
         return (self.lg, self.rg)
@@ -190,11 +193,29 @@ class Gripper(object):
             self.stir_count = 100
             self.lg_speed_x = 0
             self.rg_speed_x = 0 
-            target_class.object_speed_x = 0
             return True
         return False
 
-    def move_x(self, target_class, beput_class, table = None):
+    def shake(self, target_class):
+        if self.pour_count % 10 == 0:
+            self.pour_speed = -1*self.pour_speed
+        self.lg_speed_y = self.pour_speed
+        self.rg_speed_y = self.pour_speed
+        self.gripper_movement('y')
+        self.lg_speed_y = 0
+        self.rg_speed_y = 0 
+        self.gripper_center()
+        target_class.object_speed_y = self.pour_speed
+        target_class.update()
+        self.pour_count -= 1
+        if self.pour_count == 0:
+            self.pour_count = 100
+            self.lg_speed_y = 0
+            self.rg_speed_y = 0 
+            return True
+        return False
+
+    def pour(self, target_class, beput_class, table = None):
         if type(beput_class) is int:
             beput = table
             self.gripper_x_movement(None, beput_class)
@@ -203,9 +224,27 @@ class Gripper(object):
             beput = beput_class.bottom
             self.gripper_x_movement(beput, beput_width)
         if self.lg_speed_x == 0 and self.lg_speed_x == 0:
-            return True
+            return self.shake(target_class)
         target_class.object_speed_x = self.lg_speed_x
         target_class.object_speed_y = self.lg_speed_y
         target_class.update()
+        self.gripper_center()
+        return False
+
+    def open_drawer(self, target_class, table):
+        if target_class.object.colliderect(table):
+            self.lg_speed_y = -1
+            self.rg_speed_y = -1
+            target_class.object_speed_y = self.lg_speed_y
+            self.gripper_movement('y')
+            target_class.update()
+        else:
+            self.lg_speed_x = 0
+            self.rg_speed_x = 0
+            self.lg_speed_y = 0
+            self.rg_speed_y = 0
+            if target_class != None:
+                target_class.object_speed_y = 0
+            return True
         self.gripper_center()
         return False

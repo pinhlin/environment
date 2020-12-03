@@ -23,28 +23,64 @@ class Gui(object):
         # self.background = pygame.image.load('maize_blue.jpg')
         self.gui_list = [] #to collect all the object in the gui
         self.name2obj = {} #a dict to help to convert object name to object
-
-        # table
-        self.table = pygame.Rect(0, SCREEN_HEIGHT-50, SCREEN_WIDTH, 50)
-        self.gui_list.append((self.table_color, self.table))
+        # define drawers constants and locations:
+        self.drawer_height = 120
+        self.drawer_width = 80
+        self.drawer_front = SCREEN_HEIGHT-50-10
+        self.drawer_bottom = self.drawer_front + self.drawer_height
+        self.drawer_pos_coffee = 100
+        self.drawer_pos_cup = 200
+        self.drawer_pos_spoon = 0
 
         # spoon
         height = 100
-        self.spoon = stuff.spoon(self.blue, 5, height, 50, SCREEN_HEIGHT-50-height-10)
-        self.gui_list.append((self.spoon.color, self.spoon.shaft))
-        self.gui_list.append((self.spoon.color, self.spoon.head))
-        self.name2obj['spoon'] = self.spoon
+        self.spoon = stuff.spoon(self.blue, 5, height, self.drawer_pos_spoon+self.drawer_width/2, 
+                                self.drawer_bottom-height-10)
 
         # cup
-        self.cup = stuff.cup(self.blue, 40, 60, 200)
+        cup_height = 60
+        cup_width = 40
+        self.cup = stuff.cup(self.blue, cup_width, cup_height, self.drawer_pos_cup+self.drawer_width/2-cup_width/2, self.drawer_bottom)
         self.contain_color = self.bg_color
-        self.gui_list.append(('dummy_color', self.cup.object))
-        self.gui_list.append((self.cup.color, self.cup.left))
-        self.gui_list.append((self.cup.color, self.cup.right))
-        self.gui_list.append((self.cup.color, self.cup.bottom))
-        self.name2obj['cup'] = self.cup
 
-        # faucet
+        #coffe
+        bag_height = 80
+        bag_width = 50
+        self.coffee_bag = stuff.block(self.maize, bag_width, bag_height, self.drawer_pos_coffee+self.drawer_width/2-bag_width/2, \
+                                    self.drawer_bottom-bag_height, addText=True)
+        self.coffee_bag.addText2Block('Coffee')
+        #drawer1
+        self.drawer1 = stuff.drawer('brown', self.drawer_width, self.drawer_height, self.drawer_pos_coffee, self.drawer_front, self.coffee_bag)
+        self.gui_list.append(('brown', self.drawer1.object, self.drawer1))
+        self.name2obj['drawer1'] = self.drawer1
+        #drawer2
+        self.drawer2 = stuff.drawer('brown', self.drawer_width, self.drawer_height, self.drawer_pos_cup, self.drawer_front, self.cup)
+        self.gui_list.append(('brown', self.drawer2.object, self.drawer2))
+        self.name2obj['drawer2'] = self.drawer2
+        #drawer3
+        self.drawer3 = stuff.drawer('brown', self.drawer_width, self.drawer_height, self.drawer_pos_spoon, self.drawer_front, self.spoon)
+        self.gui_list.append(('brown', self.drawer3.object, self.drawer3))
+        self.name2obj['drawer3'] = self.drawer3
+
+        #appending object in the list after drawer
+        #appending coffee
+        self.gui_list.append((self.maize, self.coffee_bag.object, self.coffee_bag))
+        self.name2obj['coffee'] = self.coffee_bag 
+        #appending cup
+        self.gui_list.append(('dummy_color', self.cup.object, self.cup))
+        self.gui_list.append((self.cup.color, self.cup.left, self.cup))
+        self.gui_list.append((self.cup.color, self.cup.right, self.cup))
+        self.gui_list.append((self.cup.color, self.cup.bottom, self.cup))
+        self.name2obj['cup'] = self.cup
+        #spoon
+        self.gui_list.append((self.spoon.color, self.spoon.shaft, self.spoon))
+        self.gui_list.append((self.spoon.color, self.spoon.head, self.spoon))
+        self.name2obj['spoon'] = self.spoon
+        # table
+        self.table = pygame.Rect(0, SCREEN_HEIGHT-50, SCREEN_WIDTH, 50)
+        self.gui_list.append((self.table_color, self.table, None))
+
+        #faucet
         faucet_ul_x, faucet_ur_x = SCREEN_WIDTH-150, SCREEN_WIDTH-50
         faucet_bl_x, faucet_br_x = SCREEN_WIDTH-150, SCREEN_WIDTH-50
         faucet_ul_y, faucet_ur_y =  SCREEN_HEIGHT-50-300, SCREEN_HEIGHT-50-300
@@ -53,14 +89,6 @@ class Gui(object):
                                 (faucet_br_x, faucet_br_y), (faucet_br_x-30,faucet_br_y),
                                 (faucet_br_x-30, faucet_ur_y+30), (faucet_ul_x+30,faucet_ul_y+30),
                                 (faucet_ul_x+30,faucet_ul_y+40), (faucet_ul_x+30,faucet_ul_y)]
-        #self.faucet = stuff.faucet('grey12', 100, 300, faucet_ul_x, faucet_ul_y, faucet_coordinates)
-        #self.gui_list.append((self.faucet.color, self.faucet.object))
-        #self.name2obj['faucet'] = self.faucet
-
-        #block1
-        self.block = stuff.block(self.maize, 50, 80, 100, SCREEN_HEIGHT-50-80)
-        self.gui_list.append((self.maize, self.block.object))
-        self.name2obj['coffee'] = self.block
 
     def executeAction(self, gripper, action = None, target_name = None, beput_name = None):
         if action == None and target_name == None:
@@ -94,7 +122,11 @@ class Gui(object):
             else:
                 done = gripper.put(target, beput_name, self.table)
         if action == 'pour':
-            done =  gripper.move_x(target, self.name2obj[beput_name])
+            done =  gripper.pour(target, self.name2obj[beput_name])
+        if action == 'open':
+            done = gripper.open_drawer(target, self.table)
+            if done:
+                target.contain = None
 
         return done
 
@@ -107,12 +139,6 @@ class Gui(object):
         self.screen.fill(self.bg_color)
         # setting background
         # self.screen.blit(self.background, (0, 0))
-        lg = pygame.Surface((left_gripper.w, left_gripper.h))
-        rg = pygame.Surface((right_gripper.w, right_gripper.h))
-        lg.fill(self.light_grey)
-        rg.fill(self.light_grey)
-        self.screen.blit(lg, [left_gripper.x, left_gripper.y])
-        self.screen.blit(rg, [right_gripper.x, right_gripper.y])
         #draw the faucet
         pygame.draw.polygon(self.screen, 'grey', self.faucet_coordinates)
         # TODO: Fix this - I don't think this works?
@@ -124,13 +150,22 @@ class Gui(object):
         self.screen.blit(text, text_rect)
 
         for information in self.gui_list:
-            color, obj = information
+            color, obj, obj_class = information
             if color == 'dummy_color':
                 color = self.contain_color
             surf = pygame.Surface((obj.w, obj.h))
             surf.fill(color)
             self.screen.blit(surf, [obj.x, obj.y])
-        
+            if obj_class != None:
+                if obj_class.addText:
+                    text, text_rect = obj_class.text
+                    self.screen.blit(text[0], text_rect)
+        lg = pygame.Surface((left_gripper.w, left_gripper.h))
+        rg = pygame.Surface((right_gripper.w, right_gripper.h))
+        lg.fill(self.light_grey)
+        rg.fill(self.light_grey)
+        self.screen.blit(lg, [left_gripper.x, left_gripper.y])
+        self.screen.blit(rg, [right_gripper.x, right_gripper.y])
         """
         #block2
         self.block = stuff.block('yellow', 26, 50, 583, 330)
