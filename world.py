@@ -70,6 +70,12 @@ class Kitchen(object):
         self.plan_status = False
         self.run()
 
+    def close_drawer(self, target):
+        self.cur_plan.append('closing drawer')
+        self.plan += ['pick', target, 'close', target]
+        self.plan_status = False
+        self.run()
+
     def _execute_plan(self):
         """
         If the last action was completed, pop the next action from our plan.

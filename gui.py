@@ -23,6 +23,7 @@ class Gui(object):
         # self.background = pygame.image.load('maize_blue.jpg')
         self.gui_list = [] #to collect all the object in the gui
         self.name2obj = {} #a dict to help to convert object name to object
+        self.drawers_list = [] # a list to collect all the drawer names for closing
         # define drawers constants and locations:
         self.drawer_height = 120
         self.drawer_width = 80
@@ -53,15 +54,19 @@ class Gui(object):
         # drawer1
         self.drawer1 = Drawer(self.maize, self.drawer_width, self.drawer_height, self.drawer_pos_coffee, self.drawer_front, self.coffee_bag)
         self.gui_list.append((self.maize, self.drawer1.object, self.drawer1))
+        self.gui_list.append(('black', self.drawer1.bottom, self.drawer1))
         self.name2obj['drawer1'] = self.drawer1
+        self.drawers_list.append('drawer1')
         # drawer2
         self.drawer2 = Drawer(self.maize, self.drawer_width, self.drawer_height, self.drawer_pos_cup, self.drawer_front, self.cup)
         self.gui_list.append((self.maize, self.drawer2.object, self.drawer2))
         self.name2obj['drawer2'] = self.drawer2
+        self.drawers_list.append('drawer2')
         # drawer3
         self.drawer3 = Drawer(self.maize, self.drawer_width, self.drawer_height, self.drawer_pos_spoon, self.drawer_front, self.spoon)
         self.gui_list.append((self.maize, self.drawer3.object, self.drawer3))
         self.name2obj['drawer3'] = self.drawer3
+        self.drawers_list.append('drawer3')
 
         #appending object in the list after drawer
         #appending coffee
@@ -132,6 +137,9 @@ class Gui(object):
                     done = gripper.put(target, SCREEN_WIDTH-130, self.table)
                 else:
                     done = gripper.put(target, self.name2obj[beput_name])
+                    if beput_name in self.drawers_list:
+                        drawer = self.name2obj[beput_name]
+                        drawer.contain = target
             else:
                 done = gripper.put(target, beput_name, self.table)
         if action == 'pour':
@@ -143,6 +151,9 @@ class Gui(object):
             done = gripper.open_drawer(target, self.table)
             if done:
                 target.contain = None
+        if action == 'close':
+            print(1)
+            done = gripper.close_drawer(target, self.name2obj[beput_name], self.drawer_front)
 
         return done
 

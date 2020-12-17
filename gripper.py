@@ -248,3 +248,21 @@ class Gripper(object):
             return True
         self.gripper_center()
         return False
+        
+    def close_drawer(self, drawer, val):
+        if drawer.object.y < val:
+            self.lg_speed_y = 1
+            self.rg_speed_y = 1
+            drawer.object_speed_y = self.lg_speed_y
+            self.gripper_movement('y')
+            drawer.update()
+        else:
+            self.lg_speed_x = 0
+            self.rg_speed_x = 0
+            self.lg_speed_y = 0
+            self.rg_speed_y = 0
+            if drawer != None:
+                drawer.object_speed_y = 0
+            return True
+        self.gripper_center()
+        return False
