@@ -1,6 +1,6 @@
 import pygame, sys, time
 import pygame.freetype
-import stuff
+from objects import Spoon, Cup, Drawer, Block
 from gripper import Gripper
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
@@ -28,38 +28,38 @@ class Gui(object):
         self.drawer_width = 80
         self.drawer_front = SCREEN_HEIGHT-50-10
         self.drawer_bottom = self.drawer_front + self.drawer_height
-        self.drawer_pos_coffee = 100
-        self.drawer_pos_cup = 200
-        self.drawer_pos_spoon = 0
+        self.drawer_pos_coffee = 115
+        self.drawer_pos_cup = 215
+        self.drawer_pos_spoon = 15
 
         # spoon
         height = 100
-        self.spoon = stuff.spoon(self.blue, 5, height, self.drawer_pos_spoon+self.drawer_width/2, 
+        self.spoon = Spoon(self.blue, 5, height, self.drawer_pos_spoon+self.drawer_width/2, 
                                 self.drawer_bottom-height-10)
 
         # cup
         cup_height = 60
         cup_width = 40
-        self.cup = stuff.cup(self.blue, cup_width, cup_height, self.drawer_pos_cup+self.drawer_width/2-cup_width/2, self.drawer_bottom)
+        self.cup = Cup(self.blue, cup_width, cup_height, self.drawer_pos_cup+self.drawer_width/2-cup_width/2, self.drawer_bottom)
         self.contain_color = self.bg_color
         self.coffee_color = self.bg_color
 
         # coffee
         bag_height = 80
         bag_width = 50
-        self.coffee_bag = stuff.block(self.blue, bag_width, bag_height, self.drawer_pos_coffee+self.drawer_width/2-bag_width/2, \
+        self.coffee_bag = Block(self.blue, bag_width, bag_height, self.drawer_pos_coffee+self.drawer_width/2-bag_width/2, \
                                     self.drawer_bottom-bag_height, addText=True)
         self.coffee_bag.addText2Block('Coffee')
         # drawer1
-        self.drawer1 = stuff.drawer(self.maize, self.drawer_width, self.drawer_height, self.drawer_pos_coffee, self.drawer_front, self.coffee_bag)
+        self.drawer1 = Drawer(self.maize, self.drawer_width, self.drawer_height, self.drawer_pos_coffee, self.drawer_front, self.coffee_bag)
         self.gui_list.append((self.maize, self.drawer1.object, self.drawer1))
         self.name2obj['drawer1'] = self.drawer1
         # drawer2
-        self.drawer2 = stuff.drawer(self.maize, self.drawer_width, self.drawer_height, self.drawer_pos_cup, self.drawer_front, self.cup)
+        self.drawer2 = Drawer(self.maize, self.drawer_width, self.drawer_height, self.drawer_pos_cup, self.drawer_front, self.cup)
         self.gui_list.append((self.maize, self.drawer2.object, self.drawer2))
         self.name2obj['drawer2'] = self.drawer2
         # drawer3
-        self.drawer3 = stuff.drawer(self.maize, self.drawer_width, self.drawer_height, self.drawer_pos_spoon, self.drawer_front, self.spoon)
+        self.drawer3 = Drawer(self.maize, self.drawer_width, self.drawer_height, self.drawer_pos_spoon, self.drawer_front, self.spoon)
         self.gui_list.append((self.maize, self.drawer3.object, self.drawer3))
         self.name2obj['drawer3'] = self.drawer3
 
@@ -182,37 +182,3 @@ class Gui(object):
         rg.fill(self.light_grey)
         self.screen.blit(lg, [left_gripper.x, left_gripper.y])
         self.screen.blit(rg, [right_gripper.x, right_gripper.y])
-        """
-        #block2
-        self.block = stuff.block('yellow', 26, 50, 583, 330)
-        self.gui_list.append((self.block.color, self.block.object))
-        self.name2obj['object2'] = self.block
-        #platform_orginal1
-        self.platform_org = stuff.platform('black', 50, 50, 88, 380)
-        self.gui_list.append((self.platform_org.color, self.platform_org.object))
-        self.name2obj['plt_org1'] = self.platform_org
-        #platform_orginal2
-        self.platform_org2 = stuff.platform('black', 50, 50, 560, 380)
-        self.gui_list.append((self.platform_org2.color, self.platform_org2.object))
-        self.name2obj['plt_org2'] = self.platform_org
-        #platform_target
-        self.platform_target = stuff.platform('red', 50, 50, SCREEN_WIDTH / 2 - 25, 380)
-        self.gui_list.append((self.platform_target.color, self.platform_target.object))
-        self.name2obj['plt_target'] = self.platform_target
-
-                if self.rotate:
-            angle = 0
-            while self.rotate_count >= 0:
-                self.rotate_count -= 1
-                if self.rotate_count % 20 == 0:
-                    angle -= 1
-                rotated_lg = pygame.transform.rotate(lg, angle)
-                rotated_rg = pygame.transform.rotate(rg, angle)
-                self.screen.blit(rotated_lg, [left_gripper.x, left_gripper.y])
-                self.screen.blit(rotated_rg, [right_gripper.x, right_gripper.y])
-            self.rotate_count = 200
-            self.rotate = False
-        else:
-        """
-
-        #image = pygame.Surface([640,480], pygame.SRCALPHA, 32) image = image.convert_alpha() 

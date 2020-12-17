@@ -6,7 +6,7 @@ SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
 TABLE_HEIGHT = SCREEN_HEIGHT-50
 FONT = pygame.freetype.Font('fonts/OpenSans-Light.ttf', 12)
-class spoon(object):
+class Spoon(object):
     def __init__(self, color, width, height, init_x, init_y, addText = False, std = 2):
         self.addText = addText
         self.text = None
@@ -31,7 +31,7 @@ class spoon(object):
         self.object_speed_x = 0
         self.object_speed_y = 0
 
-class cup(object):
+class Cup(object):
     def __init__(self, color, width, height, init_x, bottom, addText = False, std = 2):
         #object
         rim_width = 3
@@ -72,7 +72,7 @@ class cup(object):
         pos['y'] = np.random.normal(self.object.y, self.sigma, 1000)
         return pos
 
-class drawer(object):
+class Drawer(object):
     def __init__(self, color, width, height, init_x, init_y, contain = None, addText = False, std = 2):
         #object
         self.addText = addText
@@ -114,7 +114,7 @@ class drawer(object):
         self.text = FONT.render(self.text_string, 'Red'), (self.object.x, self.object.y+self.object_height/2)
         return self.text
 
-class block(object):
+class Block(object):
     def __init__(self, color, width, height, init_x, init_y, addText = False, std = 2):
         #object
         self.addText = addText
@@ -150,36 +150,3 @@ class block(object):
             self.text_string = text
         self.text = FONT.render(self.text_string, pygame.Color(255, 203, 5)), (self.object.x, self.object.y+self.object_height/2)
         return self.text
-
-"""
-#Platform class is particular for this test, can be deleted for future purpose
-class platform(object):
-    def __init__(self, color, width, height, init_x, init_y):
-        #platform_org
-        self.color = color
-        self.object_width = width#50
-        self.object_height = height#50y
-        self.object = pygame.Rect(init_x, init_y, self.object_width, self.object_height)
-
-class freefall(object):
-    def __init__(self, color, width, height, init_x, init_y):
-        self.color = color
-        self.object_width = width 
-        self.object_height = height 
-        self.object_x = init_x #initail position x
-        self.object_y = init_y #initioal position y
-        self.object_speed_x = 0 #initialize the speed be 0
-        self.object_speed_y = 0 #initailize the speed be 0
-        self.object_acc_y = 0.98 #initailize the speed be 0
-        self.object = pygame.Rect(self.object_x, self.object_y, self.object_width, self.object_height)
-    
-    def update(self):
-        self.object.x += self.object_speed_x
-        self.object.y += self.object_speed_y
-
-    def _check_contact(self, obj_list):
-        for obj in obj_list:
-            if self.object.colliderect(obj):
-                 self.object_speed_y = 0
-                 break
-"""

@@ -27,16 +27,19 @@ class Kitchen(object):
         self.cur_plan.append('pouring')
         self.plan += ['pour', target, bepour]
         self.plan_status = False
+        self.run()
 
     def fill_water(self, target, faucet):
         self.cur_plan.append('filling water')
         self.plan += ['pick', target, 'back', target, 'put', target, faucet, 'fill_water', 'none']
         self.plan_status = False
+        self.run()
 
     def stir(self, target, bestir):
         self.cur_plan.append('stirring')
         self.plan += ['put', target, bestir, 'pick', target, 'stir', target, 'back', target]
         self.plan_status = False
+        self.run()
 
     def pick_up(self, target):
         """
@@ -47,6 +50,7 @@ class Kitchen(object):
         self.cur_plan.append('picking up target')
         self.plan += ['pick', target, 'back', target]
         self.plan_status = False
+        self.run()
 
     def put(self, target, beput):
         """
@@ -58,11 +62,13 @@ class Kitchen(object):
         self.cur_plan.append('putting target')
         self.plan += ['put', target, beput, 'back', 'none']
         self.plan_status = False
+        self.run()
 
-    def open(self, target):
+    def open_drawer(self, target):
         self.cur_plan.append('opening drawer')
         self.plan += ['pick', target, 'open', target]
         self.plan_status = False
+        self.run()
 
     def _execute_plan(self):
         """
@@ -93,4 +99,6 @@ class Kitchen(object):
             self.gui.draw(self.gripper, self.cur_action)
             pygame.display.flip()
             self.clock.tick(60)
+            if self.plan_status:
+                break
         
