@@ -54,7 +54,7 @@ class Gui(object):
         # drawer1
         self.drawer1 = Drawer(self.maize, self.drawer_width, self.drawer_height, self.drawer_pos_coffee, self.drawer_front, self.coffee_bag)
         self.gui_list.append((self.maize, self.drawer1.object, self.drawer1))
-        self.gui_list.append(('black', self.drawer1.bottom, self.drawer1))
+        #self.gui_list.append(('black', self.drawer1.bottom, self.drawer1))
         self.name2obj['drawer1'] = self.drawer1
         self.drawers_list.append('drawer1')
         # drawer2
@@ -152,8 +152,7 @@ class Gui(object):
             if done:
                 target.contain = None
         if action == 'close':
-            print(1)
-            done = gripper.close_drawer(target, self.name2obj[beput_name], self.drawer_front)
+            done = gripper.close_drawer(self.name2obj[beput_name], self.drawer_front)
 
         return done
 

@@ -87,7 +87,7 @@ class Drawer(object):
         self.object_speed_x = 0 #initialize the speed be 0
         self.object_speed_y = 0 #initailize the speed be 0
         self.object = pygame.Rect(self.object_x, self.object_y, self.object_width, self.object_height)
-        self.bottom = pygame.Rect(self.object_x, self.object_y+self.object_height, self.object_width, 0)
+        self.bottom = pygame.Rect(self.object_x, self.object_y+self.object_height, self.object_width, 10)
         self.hold = self.object
         self.sigma = std #std of the normal distribution, for uncertainty
 
